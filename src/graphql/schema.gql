@@ -8,6 +8,41 @@ type Auth {
   user: User!
 }
 
+type Booking {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type Chat {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateBookingInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateChatInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateNotificationInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateRideInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input CreateRideRequestInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
 input CreateUserInput {
   authProvider: IUserAuthProvider
   avatarUrl: String
@@ -27,6 +62,11 @@ input CreateUserInput {
   role: IUserRole
   targetLanguage: String!
   username: String!
+}
+
+input CreateVehicleInput {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 """
@@ -62,11 +102,23 @@ input LoginInput {
 }
 
 type Mutation {
+  createBooking(createBookingInput: CreateBookingInput!): Booking!
+  createChat(createChatInput: CreateChatInput!): Chat!
+  createNotification(createNotificationInput: CreateNotificationInput!): Notification!
+  createRide(createRideInput: CreateRideInput!): Ride!
+  createRideRequest(createRideRequestInput: CreateRideRequestInput!): RideRequest!
   createUser(createUserInput: CreateUserInput!): User!
+  createVehicle(createVehicleInput: CreateVehicleInput!): Vehicle!
   googleAuth(token: String!): Auth!
   login(input: LoginInput!): Auth!
   refreshToken(token: String!): Auth!
+  removeBooking(id: Int!): Booking!
+  removeChat(id: Int!): Chat!
+  removeNotification(id: Int!): Notification!
+  removeRide(id: Int!): Ride!
+  removeRideRequest(id: Int!): RideRequest!
   removeUser(id: String!): User!
+  removeVehicle(id: Int!): Vehicle!
 
   """Get presigned PUT URL for avatar"""
   requestAvatarUploadUrl(filename: String!, mime: String!): PresignedUrl!
@@ -74,8 +126,19 @@ type Mutation {
   resendVerification(email: String!): ResendVerification!
   resetPassword(input: ResetPasswordInput!): Boolean!
   signup(input: RegisterInput!): Auth!
+  updateBooking(updateBookingInput: UpdateBookingInput!): Booking!
+  updateChat(updateChatInput: UpdateChatInput!): Chat!
+  updateNotification(updateNotificationInput: UpdateNotificationInput!): Notification!
+  updateRide(updateRideInput: UpdateRideInput!): Ride!
+  updateRideRequest(updateRideRequestInput: UpdateRideRequestInput!): RideRequest!
   updateUser(updateUserInput: UpdateUserInput!): User!
+  updateVehicle(updateVehicleInput: UpdateVehicleInput!): Vehicle!
   verifyEmail(token: String!): VerifyEmail!
+}
+
+type Notification {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 type PresignedUrl {
@@ -84,8 +147,19 @@ type PresignedUrl {
 }
 
 type Query {
+  booking(id: Int!): Booking!
+  bookings: [Booking!]!
+  chat(id: Int!): Chat!
   findOne(id: String!): User!
+  notification(id: Int!): Notification!
+  notifications: [Notification!]!
+  ride(id: Int!): Ride!
+  rideRequest(id: Int!): RideRequest!
+  rideRequests: [RideRequest!]!
+  rides: [Ride!]!
   users: [User!]!
+  vehicle(id: Int!): Vehicle!
+  vehicles: [Vehicle!]!
 }
 
 input RegisterInput {
@@ -113,6 +187,46 @@ input ResetPasswordInput {
   token: String!
 }
 
+type Ride {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+type RideRequest {
+  """Example field (placeholder)"""
+  exampleField: Int!
+}
+
+input UpdateBookingInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateChatInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateNotificationInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateRideInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
+input UpdateRideRequestInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
 input UpdateUserInput {
   authProvider: IUserAuthProvider
   avatarUrl: String
@@ -135,6 +249,12 @@ input UpdateUserInput {
   username: String
 }
 
+input UpdateVehicleInput {
+  """Example field (placeholder)"""
+  exampleField: Int
+  id: Int!
+}
+
 type User {
   authProvider: String!
   avatarUrl: String!
@@ -153,6 +273,11 @@ type User {
   targetLanguage: String!
   updatedAt: DateTime!
   username: String!
+}
+
+type Vehicle {
+  """Example field (placeholder)"""
+  exampleField: Int!
 }
 
 type VerifyEmail {
