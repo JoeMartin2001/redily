@@ -101,71 +101,71 @@ services:
       - ./cors.json:/cors.json:ro
     networks: [app-net]
 
-  # --- Prometheus (Metrics Collector) ---
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: ridely_prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    networks: [app-net]
-    depends_on:
-      - app
-    restart: unless-stopped
+  # # --- Prometheus (Metrics Collector) ---
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: ridely_prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   networks: [app-net]
+  #   depends_on:
+  #     - app
+  #   restart: unless-stopped
 
-  # --- Loki (Logs Collector) ---
-  loki:
-    image: grafana/loki:latest
-    container_name: ridely_loki
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
-    networks: [app-net]
-    restart: unless-stopped
+  # # --- Loki (Logs Collector) ---
+  # loki:
+  #   image: grafana/loki:latest
+  #   container_name: ridely_loki
+  #   ports:
+  #     - "3100:3100"
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   networks: [app-net]
+  #   restart: unless-stopped
 
-  # --- Promtail (Log Shipper) ---
-  promtail:
-    image: grafana/promtail:latest
-    container_name: ridely_promtail
-    volumes:
-      - ./promtail-config.yml:/etc/promtail/config.yml:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: -config.file=/etc/promtail/config.yml
-    networks: [app-net]
-    depends_on:
-      - loki
-    restart: unless-stopped
+  # # --- Promtail (Log Shipper) ---
+  # promtail:
+  #   image: grafana/promtail:latest
+  #   container_name: ridely_promtail
+  #   volumes:
+  #     - ./promtail-config.yml:/etc/promtail/config.yml:ro
+  #     - /var/lib/docker/containers:/var/lib/docker/containers:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:ro
+  #   command: -config.file=/etc/promtail/config.yml
+  #   networks: [app-net]
+  #   depends_on:
+  #     - loki
+  #   restart: unless-stopped
 
-  # --- Grafana (Dashboards) ---
-  # Node JS Dashboard ID - 11159
-  # Minio Dashboard ID - 13502
-  grafana:
-    image: grafana/grafana:latest
-    container_name: ridely_grafana
-    ports:
-      - "3001:3000" # host:container
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
-      - TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}'
-      - TELEGRAM_CHAT_ID='${TELEGRAM_CHAT_ID}'
-      - TELEGRAM_MESSAGE_THREAD_ID=${TELEGRAM_MESSAGE_THREAD_ID}
-      - PROMETHEUS_UID=${PROMETHEUS_UID}
-      - LOKI_UID=${LOKI_UID}
-    volumes:
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - grafana_data:/var/lib/grafana
-    networks: [app-net]
-    depends_on:
-      - prometheus
-      - loki
-    restart: unless-stopped
+  # # --- Grafana (Dashboards) ---
+  # # Node JS Dashboard ID - 11159
+  # # Minio Dashboard ID - 13502
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: ridely_grafana
+  #   ports:
+  #     - "3001:3000" # host:container
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #     - GF_AUTH_ANONYMOUS_ENABLED=true
+  #     - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+  #     - TELEGRAM_BOT_TOKEN='${TELEGRAM_BOT_TOKEN}'
+  #     - TELEGRAM_CHAT_ID='${TELEGRAM_CHAT_ID}'
+  #     - TELEGRAM_MESSAGE_THREAD_ID=${TELEGRAM_MESSAGE_THREAD_ID}
+  #     - PROMETHEUS_UID=${PROMETHEUS_UID}
+  #     - LOKI_UID=${LOKI_UID}
+  #   volumes:
+  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #     - grafana_data:/var/lib/grafana
+  #   networks: [app-net]
+  #   depends_on:
+  #     - prometheus
+  #     - loki
+  #   restart: unless-stopped
 
 volumes:
   postgres_data:
   minio_data:
-  grafana_data:
+  # grafana_data:

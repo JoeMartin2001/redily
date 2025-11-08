@@ -18,8 +18,9 @@ import {
   IUserRole,
   LanguageLevel,
 } from 'src/interfaces/User';
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { TableName } from 'src/common/constants/TableName';
+import { Ride } from 'src/modules/rides/entities/ride.entity';
 
 @ObjectType()
 @Entity(TableName.USERS)
@@ -108,4 +109,8 @@ export class User implements IUser {
   @IsOptional()
   @Column({ type: 'timestamptz', nullable: true })
   emailVerifiedAt!: Date | null;
+
+  @Field(() => [Ride])
+  @OneToMany(() => Ride, (ride) => ride.driver)
+  rides: Ride[];
 }
