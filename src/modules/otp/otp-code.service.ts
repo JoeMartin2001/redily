@@ -28,9 +28,8 @@ export class OTPCodeService {
 
     await this.phoneOTPService.send({
       phoneNumber,
+      //   message: 'This is test from Eskiz',
       message: `Your OTP code is ${otpCode.code}`,
-      from: new Date(Date.now() + 1000 * 60 * 5),
-      callback_url: new Date(Date.now() + 1000 * 60 * 5),
     });
 
     return true;

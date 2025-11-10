@@ -1,11 +1,25 @@
 export interface PhoneOTPRequest {
   phoneNumber: string;
   message: string;
-  from: Date;
-  callback_url: Date;
+  from?: Date;
+  callback_url?: Date;
 }
 
 export interface PhoneOTPResponse {
+  id: string;
+  message: string;
+  status: string;
+}
+
+export interface PhoneOTPGlobalRequest {
+  phoneNumber: string;
+  message: string;
+  countryCode: string;
+  callback_url?: Date;
+  unicode: number;
+}
+
+export interface PhoneOTPGlobalResponse {
   id: string;
   message: string;
   status: string;
@@ -39,7 +53,10 @@ export interface LoginRequest {
 }
 
 export interface LoginResponse {
-  token: string;
+  message: string;
+  data: {
+    token: string;
+  };
 }
 
 export interface RefreshTokenRequest {
