@@ -38,6 +38,7 @@ registerEnumType(IUserType, {
 export enum IUserAuthProvider {
   LOCAL = 'local',
   GOOGLE = 'google',
+  PHONE = 'phone',
 }
 
 registerEnumType(IUserAuthProvider, {

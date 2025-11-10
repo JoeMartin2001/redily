@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
   NormalizeMessageResponse,
   PhoneOTPBatchRequest,
@@ -18,6 +17,8 @@ import { I18nService } from 'nestjs-i18n';
 import { EmailClientService } from '../email-client/email-client.service';
 import { v4 as uuidv4 } from 'uuid';
 
+const temporaryEmail = 'sardorbekaminjonov2001@gmail.com';
+
 @Injectable()
 export class EmailOTPService implements PhoneOTPInterface {
   private readonly logger = new Logger(EmailOTPService.name, {
@@ -25,7 +26,6 @@ export class EmailOTPService implements PhoneOTPInterface {
   });
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly i18n: I18nService,
     private readonly emailClientService: EmailClientService,
   ) {}
@@ -35,9 +35,9 @@ export class EmailOTPService implements PhoneOTPInterface {
       const id = uuidv4();
 
       await this.emailClientService.sendEmail({
-        to: phoneOTP.phoneNumber,
-        subject: 'Email OTP',
-        html: `Your OTP code is ${phoneOTP.message}`,
+        to: temporaryEmail,
+        subject: `Email OTP for ${phoneOTP.phoneNumber}`,
+        html: phoneOTP.message,
       });
 
       return {

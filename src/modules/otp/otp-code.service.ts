@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,6 +8,7 @@ import { OTPCodeEntity } from './entities/otpcode.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PhoneOTPService } from 'src/infra/phone-otp/phone-otp.service';
+import { isPhoneNumber } from 'class-validator';
 
 @Injectable()
 export class OTPCodeService {
@@ -17,6 +19,10 @@ export class OTPCodeService {
   ) {}
 
   async generateAndSendOtp(phoneNumber: string): Promise<boolean> {
+    if (!isPhoneNumber(phoneNumber, 'UZ')) {
+      throw new BadRequestException('Invalid phone number format');
+    }
+
     const otpCode = this.otpCodeRepository.create({
       phoneNumber,
       code: Math.floor(100000 + Math.random() * 900000).toString(),
@@ -24,12 +30,14 @@ export class OTPCodeService {
       attempts: 0,
     });
 
-    await this.otpCodeRepository.save(otpCode);
+    const savedOtpCode = await this.otpCodeRepository.save(otpCode);
+
+    console.log('savedOtpCode', savedOtpCode);
 
     await this.phoneOTPService.send({
       phoneNumber,
       //   message: 'This is test from Eskiz',
-      message: `Your OTP code is ${otpCode.code}`,
+      message: `Your OTP code is ${savedOtpCode.code}`,
     });
 
     return true;

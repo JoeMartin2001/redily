@@ -35,7 +35,7 @@ export class EmailClientService implements EmailClientServiceInterface {
   }): Promise<void> {
     try {
       await this.transporter?.sendMail({
-        from: 'Monolingo <no-reply@monolingo.com>',
+        from: 'Ridely <no-reply@ridely.com>',
         to: params.to,
         subject: params.subject,
         html: params.html,

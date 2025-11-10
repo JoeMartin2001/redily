@@ -10,7 +10,7 @@ import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
-import { IUserType } from 'src/common/interfaces/User';
+import { IUserAuthProvider, IUserType } from 'src/common/interfaces/User';
 import { ConfigService } from '@nestjs/config';
 import { I18nService } from 'nestjs-i18n';
 import { RegisterInput } from './dto/register.input';
@@ -22,6 +22,7 @@ export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   private googleClient: OAuth2Client;
   private readonly FRONTEND_URL: string;
+  private readonly supabasePhoneSecret: string;
 
   constructor(
     private readonly usersService: UserService,
@@ -37,6 +38,10 @@ export class AuthService {
     this.FRONTEND_URL =
       this.configService.get<string>('app.frontendUrl') ??
       'http://localhost:3001';
+
+    this.supabasePhoneSecret =
+      this.configService.get<string>('app.supabasePhoneSecret') ??
+      'ridely-default-phone-secret';
   }
 
   async signup(signupInput: RegisterInput) {
@@ -87,13 +92,21 @@ export class AuthService {
 
     const supabaseAdmin = this.supabaseService.getAdminClient();
 
+    const sanitizedPhone = phone.replace(/[^0-9]/g, '');
+
     // 1. Supabase Workaround: Use a placeholder email and a temporary secure password.
     // This is necessary because Supabase Auth (GoTrue) is primarily email/password based.
-    const placeholderEmail = `${phone.replace(/[^0-9]/g, '')}@blablacar.uz`;
-    const tempPassword = crypto.randomBytes(16).toString('hex');
+    const placeholderEmail = `${sanitizedPhone}@ridely.uz`;
+    const tempPassword = crypto
+      .createHash('sha256')
+      .update(`${phone}:${this.supabasePhoneSecret}`)
+      .digest('hex');
 
     let accessToken: string | undefined;
     let refreshToken: string | undefined;
+
+    // Ensure we track the platform user account
+    let appUser = await this.usersService.findByEmail(placeholderEmail);
 
     // --- 1. Try to Sign In the Existing User ---
     try {
@@ -130,28 +143,47 @@ export class AuthService {
     // --- 2. If Sign In Failed, Attempt to Sign Up the New User ---
     if (!accessToken) {
       try {
-        const { data, error } = await supabaseAdmin.auth.signUp({
+        const { data, error } = await supabaseAdmin.auth.admin.createUser({
           email: placeholderEmail,
           password: tempPassword,
-          phone: phone,
-          options: {
-            data: {
-              phone_number: phone,
-            },
+          phone,
+          email_confirm: true,
+          phone_confirm: true,
+          user_metadata: {
+            phone_number: phone,
           },
         });
 
-        if (data?.session?.access_token) {
-          this.logger.log(`Sign-up successful for new user: ${phone}`);
-          accessToken = data.session.access_token;
-          refreshToken = data.session.refresh_token;
-        } else if (error) {
+        if (error) {
           this.logger.error(`Sign-up error for ${phone}: ${error.message}`);
           throw new InternalServerErrorException(
             this.i18n.t('auth.registration_error', {
               args: { message: error.message },
             }),
           );
+        }
+
+        if (data?.user?.id) {
+          const { data: signInData, error: signInError } =
+            await supabaseAdmin.auth.signInWithPassword({
+              email: placeholderEmail,
+              password: tempPassword,
+            });
+
+          if (signInData?.session?.access_token) {
+            this.logger.log(`Sign-up successful for new user: ${phone}`);
+            accessToken = signInData.session.access_token;
+            refreshToken = signInData.session.refresh_token;
+          } else if (signInError) {
+            this.logger.error(
+              `Post sign-up sign-in error for ${phone}: ${signInError.message}`,
+            );
+            throw new InternalServerErrorException(
+              this.i18n.t('auth.authentication_error', {
+                args: { message: signInError.message },
+              }),
+            );
+          }
         }
       } catch (e) {
         const errorMessage = e instanceof Error ? e.message : 'Unknown error';
@@ -166,6 +198,39 @@ export class AuthService {
       }
     }
 
+    if (!appUser) {
+      const username = `ridely_${sanitizedPhone}`.slice(0, 30);
+      const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+      try {
+        appUser = await this.usersService.create({
+          email: placeholderEmail,
+          username,
+          phoneNumber: phone,
+          password: hashedPassword,
+          type: IUserType.PASSENGER,
+          authProvider: IUserAuthProvider.PHONE,
+          emailVerified: true,
+          emailVerifiedAt: new Date(),
+        });
+      } catch (error) {
+        this.logger.error(
+          `Failed to create local user for phone ${phone}: ${
+            error instanceof Error ? error.message : 'Unknown error'
+          }`,
+        );
+        throw new InternalServerErrorException(
+          this.i18n.t('auth.failed_to_complete_auth'),
+        );
+      }
+    } else if (!appUser.phoneNumber) {
+      await this.usersService.update(appUser.id, {
+        id: appUser.id,
+        phoneNumber: phone,
+      });
+      appUser.phoneNumber = phone;
+    }
+
     if (!accessToken) {
       this.logger.error(`Failed to acquire access token for phone: ${phone}`);
 
@@ -174,7 +239,7 @@ export class AuthService {
       );
     }
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken, user: appUser };
   }
 
   async validateUser(

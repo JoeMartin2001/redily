@@ -19,21 +19,25 @@ export class OTPCodeEntity implements OTPCode {
   @IsString()
   @IsPhoneNumber('UZ')
   @IsNotEmpty()
+  @Column({ type: 'varchar', length: 40 })
   phoneNumber!: string;
 
   @Field(() => String)
   @IsString()
   @IsNotEmpty()
+  @Column({ type: 'varchar', length: 6 })
   code!: string;
 
   @Field(() => Date)
   @IsDateString()
   @IsNotEmpty()
+  @Column({ type: 'timestamptz' })
   expiresAt!: Date;
 
   @Field(() => Number)
   @IsNumber()
   @IsNotEmpty()
+  @Column({ type: 'int', default: 0 })
   attempts!: number;
 
   @Field()
