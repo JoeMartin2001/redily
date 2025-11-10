@@ -1,37 +1,65 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Field,
+  ID,
+  ObjectType,
+  Int,
+  GraphQLISODateTime,
+} from '@nestjs/graphql';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  RelationId,
+} from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { Coordinate } from './coordinate.entity';
 
+@ObjectType()
 @Entity()
 export class Ride {
+  @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @ManyToOne(() => User, (user) => user.rides)
-  driver: User;
+  @Field(() => User)
+  @ManyToOne(() => User, (user) => user.rides, { eager: true })
+  @JoinColumn({ name: 'driver_id' })
+  driver!: User;
 
+  @Field(() => String)
+  @RelationId((ride: Ride) => ride.driver)
+  driverId!: string;
+
+  @Field(() => GraphQLISODateTime)
   @Column({ type: 'timestamp' })
-  departAt: Date;
+  departAt!: Date;
 
+  @Field(() => Int)
   @Column()
-  seatsTotal: number;
+  seatsTotal!: number;
 
+  @Field(() => Int)
   @Column()
-  seatsAvailable: number;
+  seatsAvailable!: number;
 
+  @Field(() => Int)
   @Column({ type: 'int' })
-  pricePerSeatCents: number;
+  pricePerSeatCents!: number;
 
-  @Column({ type: 'geography', spatialFeatureType: 'Point', srid: 4326 })
-  origin: string;
+  @Field(() => Coordinate)
+  @Column({ type: 'jsonb' })
+  origin!: Coordinate;
 
-  @Column({ type: 'geography', spatialFeatureType: 'Point', srid: 4326 })
-  destination: string;
+  @Field(() => Coordinate)
+  @Column({ type: 'jsonb' })
+  destination!: Coordinate;
 
+  @Field(() => [Coordinate], { nullable: true })
   @Column({
-    type: 'geography',
-    spatialFeatureType: 'LineString',
-    srid: 4326,
+    type: 'jsonb',
     nullable: true,
   })
-  route: string;
+  route?: Coordinate[];
 }

@@ -5,6 +5,7 @@ import { UpdateBookingInput } from './dto/update-booking.input';
 @Injectable()
 export class BookingsService {
   create(createBookingInput: CreateBookingInput) {
+    console.log(createBookingInput);
     return 'This action adds a new booking';
   }
 
@@ -17,6 +18,7 @@ export class BookingsService {
   }
 
   update(id: number, updateBookingInput: UpdateBookingInput) {
+    console.log(updateBookingInput);
     return `This action updates a #${id} booking`;
   }
 

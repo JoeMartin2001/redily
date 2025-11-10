@@ -47,10 +47,10 @@ export class User implements IUser {
   @Column({ nullable: true })
   phoneNumber!: string;
 
-  @Field()
+  @Field(() => GraphQLISODateTime, { nullable: true })
   @IsDate()
-  @IsNotEmpty()
-  @Column({ nullable: true })
+  @IsOptional()
+  @Column({ type: 'date', nullable: true })
   dateOfBirth!: Date | null;
 
   @Field()

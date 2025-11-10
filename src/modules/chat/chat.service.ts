@@ -5,6 +5,7 @@ import { UpdateChatInput } from './dto/update-chat.input';
 @Injectable()
 export class ChatService {
   create(createChatInput: CreateChatInput) {
+    console.log(createChatInput);
     return 'This action adds a new chat';
   }
 
@@ -17,6 +18,7 @@ export class ChatService {
   }
 
   update(id: number, updateChatInput: UpdateChatInput) {
+    console.log(updateChatInput);
     return `This action updates a #${id} chat`;
   }
 

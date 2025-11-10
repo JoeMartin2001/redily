@@ -111,6 +111,23 @@ class EnvironmentVariables {
 
   @IsString()
   MINIO_ROOT_PASSWORD!: string;
+
+  // ───── Supabase ─────
+  @IsString()
+  SUPABASE_URL!: string;
+
+  @IsString()
+  SUPABASE_SERVICE_ROLE_KEY!: string;
+
+  // ───── Eskiz ─────
+  @IsString()
+  ESKIZ_API_KEY!: string;
+
+  @IsString()
+  ESKIZ_EMAIL_ADDRESS!: string;
+
+  @IsString()
+  ESKIZ_PASSWORD!: string;
 }
 
 export function validate(config: Record<string, unknown>) {

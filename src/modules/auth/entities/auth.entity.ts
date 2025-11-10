@@ -11,10 +11,10 @@ export class Auth {
   @IsNotEmpty()
   accessToken!: string;
 
-  @Field(() => String)
+  @Field({ nullable: true })
   @IsString()
   @IsNotEmpty()
-  refreshToken!: string;
+  refreshToken?: string;
 
   @Field(() => User)
   @IsOptional()

@@ -5,6 +5,7 @@ import { UpdateRideRequestInput } from './dto/update-ride-request.input';
 @Injectable()
 export class RideRequestsService {
   create(createRideRequestInput: CreateRideRequestInput) {
+    console.log(createRideRequestInput);
     return 'This action adds a new rideRequest';
   }
 
@@ -17,6 +18,7 @@ export class RideRequestsService {
   }
 
   update(id: number, updateRideRequestInput: UpdateRideRequestInput) {
+    console.log(updateRideRequestInput);
     return `This action updates a #${id} rideRequest`;
   }
 

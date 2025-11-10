@@ -1,92 +1,47 @@
-import { Resolver, Mutation, Args, Context } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
-import { LoginInput } from './dto/login.input';
-import { ResetPasswordInput } from './dto/reset-password.input';
-import { RequestPasswordResetInput } from './dto/request-password-reset.input';
-import { VerifyEmail } from './entities/verify-email.entity';
-import { RegisterInput } from './dto/register.input';
-import { ResendVerification } from './entities/resend-verification.entity';
+import { OTPCodeService } from '../otp/otp-code.service';
+import { VerifyPhoneInput } from './dto/verify-phone.input';
 
 @Resolver(() => Auth)
 export class AuthResolver {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly otpCodeService: OTPCodeService,
+  ) {}
 
-  @Mutation(() => Auth)
-  async googleAuth(@Args('token') token: string): Promise<Auth> {
-    return await this.authService.googleAuth(token);
-  }
+  // --- External Login (Google/Social) ---
+  // This is kept, but the service must now use Supabase's social sign-in methods
+  // @Mutation(() => Auth)
+  // async googleAuth(@Args('token') token: string): Promise<Auth> {
+  //   return await this.authService.googleAuth(token);
+  // }
 
-  @Mutation(() => Auth)
-  async signup(@Args('input') input: RegisterInput) {
-    return this.authService.signup(input);
-  }
+  // --- PHONE OTP FLOW (Eskiz.uz) ---
 
-  @Mutation(() => Auth)
-  async login(@Args('input') input: LoginInput) {
-    return this.authService.signIn(input.email, input.password);
-  }
-
-  @Mutation(() => Auth)
-  async refreshToken(@Args('token') token: string): Promise<any> {
-    return this.authService.refreshToken(token);
-  }
-
+  // 1. Sends the OTP code via Eskiz.uz and stores it in the database
   @Mutation(() => Boolean)
-  async requestPasswordReset(
-    @Args('input') input: RequestPasswordResetInput,
-    @Context()
-    {
-      req,
-    }: {
-      req: {
-        ip: string;
-        headers: {
-          'user-agent': string;
-        };
-      };
-    },
-  ) {
-    await this.authService.requestPasswordReset(
-      input.email,
-      req?.ip,
-      req?.headers['user-agent'],
-    );
-
-    return true; // Always true (no user enumeration)
+  async sendPhoneOtp(
+    @Args('phoneNumber') phoneNumber: string,
+  ): Promise<boolean> {
+    // The service handles rate limiting, code generation, and Eskiz.uz API call
+    return await this.otpCodeService.generateAndSendOtp(phoneNumber);
   }
 
-  @Mutation(() => Boolean)
-  async resetPassword(@Args('input') input: ResetPasswordInput) {
-    await this.authService.resetPassword(input.token, input.newPassword);
+  // 2. Verifies the OTP code and uses Supabase to create a user session (JWT)
+  @Mutation(() => Auth)
+  async verifyPhoneAndLogin(
+    @Args('input') input: VerifyPhoneInput,
+  ): Promise<Auth> {
+    // Step 1: Verify the code is correct and not expired/attempted too many times
+    await this.otpCodeService.verifyOtpCode(input.phoneNumber, input.code);
 
-    return true;
-  }
+    // Step 2: Use the verified phone to create/sign in the user via Supabase SDK
+    // This function returns the Supabase JWT session token.
+    const tokens = await this.authService.finalizePhoneAuth(input.phoneNumber);
 
-  @Mutation(() => ResendVerification)
-  async resendVerification(
-    @Args('email') email: string,
-    @Context()
-    {
-      req,
-    }: {
-      req: {
-        ip: string;
-        headers: {
-          'user-agent': string;
-        };
-      };
-    },
-  ) {
-    return this.authService.resendVerification(
-      email,
-      req?.ip,
-      req?.headers['user-agent'],
-    );
-  }
-
-  @Mutation(() => VerifyEmail)
-  async verifyEmail(@Args('token') token: string) {
-    return this.authService.verifyEmail(token);
+    // Return the JWT (accessToken) to the client
+    return tokens;
   }
 }

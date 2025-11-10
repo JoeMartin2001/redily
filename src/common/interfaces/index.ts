@@ -8,3 +8,4 @@ export * from './RideSearchResult';
 export * from './Review';
 export * from './User';
 export * from './Vehicle';
+export * from './OTPCode';

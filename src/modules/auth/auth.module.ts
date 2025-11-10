@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
-import { JwtModule, JwtModuleOptions, JwtSignOptions } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from '../user/user.module';
 import { User } from '../user/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { UserService } from '../user/user.service';
 import { EmailModule } from '../email/email.module';
@@ -15,12 +13,16 @@ import { EmailService } from '../email/email.service';
 import { EmailVerificationToken } from './entities/email-verification-token.entity';
 import { StorageService } from 'src/infra/storage/storage.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtSupabaseStrategy } from './strategies/jwt.supabase.strategy';
+import { SupabaseModule } from 'src/infra/supabase/supabase.module';
+import { OTPCodeModule } from '../otp/otp-code.module';
 
 @Module({
   providers: [
     AuthResolver,
     AuthService,
-    JwtStrategy,
+    JwtSupabaseStrategy,
+    ConfigService,
     LocalStrategy,
     EmailService,
     UserService,
@@ -33,20 +35,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       PasswordResetToken,
       EmailVerificationToken,
     ]),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService): JwtModuleOptions => ({
-        secret: config.get<string>('app.jwtSecret'),
-        signOptions: {
-          expiresIn: config.get<number>('app.jwtExpiresIn') ?? 1 * 60 * 60 * 24,
-        } as JwtSignOptions,
-      }),
-    }),
-
+    ConfigModule,
+    SupabaseModule,
     UserModule,
     EmailModule,
+    OTPCodeModule,
   ],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService],
 })
 export class AuthModule {}

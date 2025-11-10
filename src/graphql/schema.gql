@@ -4,7 +4,7 @@
 
 type Auth {
   accessToken: String!
-  refreshToken: String!
+  refreshToken: String
   user: User!
 }
 
@@ -16,6 +16,16 @@ type Booking {
 type Chat {
   """Example field (placeholder)"""
   exampleField: Int!
+}
+
+type Coordinate {
+  lat: Float!
+  lng: Float!
+}
+
+input CoordinateInput {
+  lat: Float!
+  lng: Float!
 }
 
 input CreateBookingInput {
@@ -34,8 +44,14 @@ input CreateNotificationInput {
 }
 
 input CreateRideInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  departAt: DateTime!
+  destination: CoordinateInput!
+  driverId: String!
+  origin: CoordinateInput!
+  pricePerSeatCents: Int!
+  route: [CoordinateInput!]
+  seatsAvailable: Int!
+  seatsTotal: Int!
 }
 
 input CreateRideRequestInput {
@@ -47,20 +63,18 @@ input CreateUserInput {
   authProvider: IUserAuthProvider
   avatarUrl: String
   bio: String
+  dateOfBirth: DateTime
   email: String!
   emailVerified: Boolean
   emailVerifiedAt: DateTime
+  firstName: String
 
   """Google account ID if linking"""
   googleId: String
-  isStudent: Boolean
-  languagesLearning: [String!]
-  languagesTeaching: [String!]
-  level: LanguageLevel!
-  nativeLanguage: String!
+  lastName: String
   password: String
-  role: IUserRole
-  targetLanguage: String!
+  phoneNumber: String
+  type: IUserType
   username: String!
 }
 
@@ -80,25 +94,10 @@ enum IUserAuthProvider {
   LOCAL
 }
 
-"""User roles"""
-enum IUserRole {
-  STUDENT
-  TUTOR
-}
-
-"""CEFR language proficiency levels"""
-enum LanguageLevel {
-  A1
-  A2
-  B1
-  B2
-  C1
-  C2
-}
-
-input LoginInput {
-  email: String!
-  password: String!
+"""User types"""
+enum IUserType {
+  DRIVER
+  PASSENGER
 }
 
 type Mutation {
@@ -109,23 +108,17 @@ type Mutation {
   createRideRequest(createRideRequestInput: CreateRideRequestInput!): RideRequest!
   createUser(createUserInput: CreateUserInput!): User!
   createVehicle(createVehicleInput: CreateVehicleInput!): Vehicle!
-  googleAuth(token: String!): Auth!
-  login(input: LoginInput!): Auth!
-  refreshToken(token: String!): Auth!
   removeBooking(id: Int!): Booking!
   removeChat(id: Int!): Chat!
   removeNotification(id: Int!): Notification!
-  removeRide(id: Int!): Ride!
+  removeRide(id: String!): Ride!
   removeRideRequest(id: Int!): RideRequest!
   removeUser(id: String!): User!
   removeVehicle(id: Int!): Vehicle!
 
   """Get presigned PUT URL for avatar"""
   requestAvatarUploadUrl(filename: String!, mime: String!): PresignedUrl!
-  requestPasswordReset(input: RequestPasswordResetInput!): Boolean!
-  resendVerification(email: String!): ResendVerification!
-  resetPassword(input: ResetPasswordInput!): Boolean!
-  signup(input: RegisterInput!): Auth!
+  sendPhoneOtp(phoneNumber: String!): Boolean!
   updateBooking(updateBookingInput: UpdateBookingInput!): Booking!
   updateChat(updateChatInput: UpdateChatInput!): Chat!
   updateNotification(updateNotificationInput: UpdateNotificationInput!): Notification!
@@ -133,7 +126,7 @@ type Mutation {
   updateRideRequest(updateRideRequestInput: UpdateRideRequestInput!): RideRequest!
   updateUser(updateUserInput: UpdateUserInput!): User!
   updateVehicle(updateVehicleInput: UpdateVehicleInput!): Vehicle!
-  verifyEmail(token: String!): VerifyEmail!
+  verifyPhoneAndLogin(input: VerifyPhoneInput!): Auth!
 }
 
 type Notification {
@@ -153,7 +146,7 @@ type Query {
   findOne(id: String!): User!
   notification(id: Int!): Notification!
   notifications: [Notification!]!
-  ride(id: Int!): Ride!
+  ride(id: String!): Ride!
   rideRequest(id: Int!): RideRequest!
   rideRequests: [RideRequest!]!
   rides: [Ride!]!
@@ -162,34 +155,17 @@ type Query {
   vehicles: [Vehicle!]!
 }
 
-input RegisterInput {
-  avatarUrl: String
-  bio: String
-  email: String!
-  level: LanguageLevel!
-  nativeLanguage: String!
-  password: String!
-  targetLanguage: String!
-  username: String!
-}
-
-input RequestPasswordResetInput {
-  email: String!
-}
-
-type ResendVerification {
-  alreadyVerified: Boolean!
-  success: Boolean!
-}
-
-input ResetPasswordInput {
-  newPassword: String!
-  token: String!
-}
-
 type Ride {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  departAt: DateTime!
+  destination: Coordinate!
+  driver: User!
+  driverId: String!
+  id: ID!
+  origin: Coordinate!
+  pricePerSeatCents: Int!
+  route: [Coordinate!]
+  seatsAvailable: Int!
+  seatsTotal: Int!
 }
 
 type RideRequest {
@@ -216,9 +192,15 @@ input UpdateNotificationInput {
 }
 
 input UpdateRideInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+  departAt: DateTime
+  destination: CoordinateInput
+  driverId: String
+  id: String!
+  origin: CoordinateInput
+  pricePerSeatCents: Int
+  route: [CoordinateInput!]
+  seatsAvailable: Int
+  seatsTotal: Int
 }
 
 input UpdateRideRequestInput {
@@ -231,21 +213,19 @@ input UpdateUserInput {
   authProvider: IUserAuthProvider
   avatarUrl: String
   bio: String
+  dateOfBirth: DateTime
   email: String
   emailVerified: Boolean
   emailVerifiedAt: DateTime
+  firstName: String
 
   """Google account ID if linking"""
   googleId: String
   id: String!
-  isStudent: Boolean
-  languagesLearning: [String!]
-  languagesTeaching: [String!]
-  level: LanguageLevel
-  nativeLanguage: String
+  lastName: String
   password: String
-  role: IUserRole
-  targetLanguage: String
+  phoneNumber: String
+  type: IUserType
   username: String
 }
 
@@ -260,17 +240,16 @@ type User {
   avatarUrl: String!
   bio: String!
   createdAt: DateTime!
+  dateOfBirth: DateTime
   email: String!
   emailVerified: Boolean!
   emailVerifiedAt: DateTime
+  firstName: String!
   id: ID!
-  isStudent: Boolean!
-  languagesLearning: [String!]!
-  languagesTeaching: [String!]!
-  level: LanguageLevel!
-  nativeLanguage: String!
-  role: String!
-  targetLanguage: String!
+  lastName: String!
+  phoneNumber: String!
+  rides: [Ride!]!
+  type: String!
   updatedAt: DateTime!
   username: String!
 }
@@ -280,11 +259,7 @@ type Vehicle {
   exampleField: Int!
 }
 
-type VerifyEmail {
-  accessToken: String!
-  alreadyVerified: Boolean!
-  refreshToken: String!
-  success: Boolean!
-  tokenExpired: Boolean!
-  user: User!
+input VerifyPhoneInput {
+  code: String!
+  phoneNumber: String!
 }

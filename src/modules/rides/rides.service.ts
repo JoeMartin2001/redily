@@ -5,6 +5,7 @@ import { UpdateRideInput } from './dto/update-ride.input';
 @Injectable()
 export class RidesService {
   create(createRideInput: CreateRideInput) {
+    console.log(createRideInput);
     return 'This action adds a new ride';
   }
 
@@ -12,15 +13,16 @@ export class RidesService {
     return `This action returns all rides`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ride`;
+  findOne(id: string) {
+    return `This action returns ride ${id}`;
   }
 
-  update(id: number, updateRideInput: UpdateRideInput) {
-    return `This action updates a #${id} ride`;
+  update(id: string, updateRideInput: UpdateRideInput) {
+    console.log(updateRideInput);
+    return `This action updates ride ${id}`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ride`;
+  remove(id: string) {
+    return `This action removes ride ${id}`;
   }
 }

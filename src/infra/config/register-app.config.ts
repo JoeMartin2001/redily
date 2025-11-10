@@ -44,4 +44,13 @@ export default registerAs('app', () => ({
   // MinIO
   minioRootUser: process.env.MINIO_ROOT_USER,
   minioRootPassword: process.env.MINIO_ROOT_PASSWORD,
+
+  // Supabase
+  supabaseUrl: process.env.SUPABASE_URL,
+  supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
+
+  // Eskiz
+  eskizApiKey: process.env.ESKIZ_API_KEY,
+  eskizEmailAddress: process.env.ESKIZ_EMAIL_ADDRESS,
+  eskizPassword: process.env.ESKIZ_PASSWORD,
 }));
