@@ -1,27 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import nodemailer, { Transporter } from 'nodemailer';
-import { ConfigService } from '@nestjs/config';
-
-// const transporter = nodemailer.createTransport({
-//   host: process.env.SMTP_HOST, // e.g. smtp.postmarkapp.com / email-smtp.us-east-1.amazonaws.com
-//   port: Number(process.env.SMTP_PORT) || 587,
-//   secure: false,
-//   auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
-// });
+import { EmailClientService } from 'src/infra/email-client/email-client.service';
 
 @Injectable()
 export class EmailService {
-  private readonly transporter: Transporter;
-
-  constructor(private readonly configService: ConfigService) {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: this.configService.get('app.gmailUser'),
-        pass: this.configService.get('app.gmailPass'),
-      },
-    });
-  }
+  constructor(private readonly emailClientService: EmailClientService) {}
 
   async sendPasswordReset(
     to: string,
@@ -42,10 +24,9 @@ export class EmailService {
           <p>If you didn't request this, you can ignore this email.</p>
         `;
 
-    await this.transporter?.sendMail({
-      from: 'Monolingo <no-reply@monolingo.com>',
-      to: to,
+    await this.emailClientService.sendEmail({
       subject: subject,
+      to: to,
       html: html,
     });
   }
@@ -67,8 +48,7 @@ export class EmailService {
           <p>If you didn't request this, you can ignore this email.</p>
         `;
 
-    await this.transporter?.sendMail({
-      from: 'Monolingo <no-reply@monolingo.com>',
+    await this.emailClientService.sendEmail({
       to: to,
       subject: subject,
       html: html,
@@ -89,8 +69,7 @@ export class EmailService {
           <p>Thank you for signing up.</p>
         `;
 
-    await this.transporter?.sendMail({
-      from: 'Monolingo <no-reply@monolingo.com>',
+    await this.emailClientService.sendEmail({
       to: to,
       subject: subject,
       html: html,

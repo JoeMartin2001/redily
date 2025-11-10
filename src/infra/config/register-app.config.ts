@@ -50,7 +50,6 @@ export default registerAs('app', () => ({
   supabaseServiceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
 
   // Eskiz
-  eskizApiKey: process.env.ESKIZ_API_KEY,
   eskizEmailAddress: process.env.ESKIZ_EMAIL_ADDRESS,
   eskizPassword: process.env.ESKIZ_PASSWORD,
 }));

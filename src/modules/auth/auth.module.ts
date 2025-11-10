@@ -7,9 +7,7 @@ import { User } from '../user/entities/user.entity';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './strategies/local.strategy';
 import { UserService } from '../user/user.service';
-import { EmailModule } from '../email/email.module';
 import { PasswordResetToken } from './entities/password-reset-token.entity';
-import { EmailService } from '../email/email.service';
 import { EmailVerificationToken } from './entities/email-verification-token.entity';
 import { StorageService } from 'src/infra/storage/storage.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -24,7 +22,6 @@ import { OTPCodeModule } from '../otp/otp-code.module';
     JwtSupabaseStrategy,
     ConfigService,
     LocalStrategy,
-    EmailService,
     UserService,
     StorageService,
   ],
@@ -38,7 +35,6 @@ import { OTPCodeModule } from '../otp/otp-code.module';
     ConfigModule,
     SupabaseModule,
     UserModule,
-    EmailModule,
     OTPCodeModule,
   ],
   exports: [AuthService],

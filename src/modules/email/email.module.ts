@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { EmailService } from './email.service';
-import { EmailResolver } from './email.resolver';
+import { EmailClientModule } from 'src/infra/email-client/email-client.module';
 
 @Module({
-  providers: [EmailResolver, EmailService],
+  providers: [EmailService],
+  imports: [EmailClientModule],
 })
 export class EmailModule {}

@@ -121,9 +121,6 @@ class EnvironmentVariables {
 
   // ───── Eskiz ─────
   @IsString()
-  ESKIZ_API_KEY!: string;
-
-  @IsString()
   ESKIZ_EMAIL_ADDRESS!: string;
 
   @IsString()
