@@ -10,7 +10,11 @@ import {
   IsBoolean,
   IsDate,
 } from 'class-validator';
-import { IUserAuthProvider, IUser, IUserType } from 'src/interfaces/User';
+import {
+  IUserAuthProvider,
+  IUser,
+  IUserType,
+} from 'src/common/interfaces/User';
 
 @InputType()
 export class CreateUserInput implements Partial<IUser> {

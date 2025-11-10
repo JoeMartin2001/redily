@@ -11,7 +11,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 import { Auth } from './entities/auth.entity';
-import { IUserAuthProvider, IUserType } from 'src/interfaces/User';
+import { IUserAuthProvider, IUserType } from 'src/common/interfaces/User';
 import { randomUUID } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { PasswordResetToken } from './entities/password-reset-token.entity';

@@ -13,7 +13,11 @@ import {
   IsBoolean,
   IsDate,
 } from 'class-validator';
-import { IUser, IUserAuthProvider, IUserType } from 'src/interfaces/User';
+import {
+  IUser,
+  IUserAuthProvider,
+  IUserType,
+} from 'src/common/interfaces/User';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { TableName } from 'src/common/constants/TableName';
 import { Ride } from 'src/modules/rides/entities/ride.entity';

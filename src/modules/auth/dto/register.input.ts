@@ -1,6 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
-import { IUser } from 'src/interfaces/User';
+import { IUser } from 'src/common/interfaces/User';
 
 @InputType()
 export class RegisterInput implements Partial<IUser> {
