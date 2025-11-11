@@ -4,6 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { User } from 'src/modules/user/entities/user.entity';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
 import { Booking } from 'src/modules/bookings/entities/booking.entity';
+import { OTPCodeEntity } from 'src/modules/otp/entities/otpcode.entity';
+import { PasswordResetToken } from 'src/modules/auth/entities/password-reset-token.entity';
+import { EmailVerificationToken } from 'src/modules/auth/entities/email-verification-token.entity';
+import { Environment } from '../config/env.validation';
 
 export const supabaseDbConfig = (
   configService: ConfigService,
@@ -29,14 +33,20 @@ export const supabaseDbConfig = (
       User,
       Ride,
       Booking,
-      // Add all your entities here
+      OTPCodeEntity,
+      PasswordResetToken,
+      EmailVerificationToken,
     ],
 
     // Synchronize should be false in production
-    synchronize: configService.get<string>('NODE_ENV') === 'development',
+    synchronize: [Environment.Development, Environment.Local].includes(
+      configService.get<Environment>('app.nodeEnv')!,
+    ),
 
     // Logging
-    logging: configService.get<string>('NODE_ENV') === 'development',
+    logging: [Environment.Development, Environment.Local].includes(
+      configService.get<Environment>('app.nodeEnv')!,
+    ),
 
     // Migrations
     migrations: [__dirname + '/../migrations/*.ts'],
