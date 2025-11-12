@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
-// import { EskizService } from '../eskiz/eskiz.service';
-import {
+import { Inject, Injectable } from '@nestjs/common';
+import type {
   PhoneOTPGlobalRequest,
   PhoneOTPGlobalResponse,
   NormalizeMessageResponse,
@@ -10,12 +9,14 @@ import {
   PhoneOTPRequest,
   PhoneOTPResponse,
 } from 'src/infra/phone-otp/interfaces/PhoneOTPInterface';
-import { EmailOTPService } from '../email-otp/email-otp.service';
+import { PHONE_OTP_SERVICE } from './phone-otp.constants';
 
 @Injectable()
 export class PhoneOTPService implements PhoneOTPInterface {
-  // constructor(private readonly otpService: EskizService) {}
-  constructor(private readonly otpService: EmailOTPService) {}
+  constructor(
+    @Inject(PHONE_OTP_SERVICE)
+    private readonly otpService: PhoneOTPInterface,
+  ) {}
 
   async send(phoneOTP: PhoneOTPRequest): Promise<PhoneOTPResponse> {
     return await this.otpService.send(phoneOTP);

@@ -10,6 +10,11 @@ import {
   validateSync,
 } from 'class-validator';
 
+export enum OtpProviderEnum {
+  Eskiz = 'eskiz',
+  Email = 'email',
+}
+
 export enum Environment {
   Development = 'development',
   Local = 'local',
@@ -131,6 +136,12 @@ class EnvironmentVariables {
 
   @IsString()
   ESKIZ_PASSWORD!: string;
+
+  // ───── OTP Provider ─────
+  @IsEnum(OtpProviderEnum, {
+    message: 'OTP_PROVIDER must be either eskiz or email',
+  })
+  OTP_PROVIDER!: OtpProviderEnum;
 }
 
 export function validate(config: Record<string, unknown>) {

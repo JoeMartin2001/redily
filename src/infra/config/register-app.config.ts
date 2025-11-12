@@ -56,4 +56,6 @@ export default registerAs('app', () => ({
   // Eskiz
   eskizEmailAddress: process.env.ESKIZ_EMAIL_ADDRESS,
   eskizPassword: process.env.ESKIZ_PASSWORD,
+
+  otpProvider: process.env.OTP_PROVIDER || 'eskiz',
 }));

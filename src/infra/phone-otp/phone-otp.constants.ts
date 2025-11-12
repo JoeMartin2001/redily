@@ -1,0 +1,1 @@
+export const PHONE_OTP_SERVICE = 'PHONE_OTP_SERVICE';
