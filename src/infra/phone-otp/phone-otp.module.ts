@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PhoneOTPService } from './phone-otp.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { EmailOTPService } from './email-otp.service';
+import { EmailOTPService } from './eskiz/email-otp.service';
 import { EmailClientModule } from '../email-client/email-client.module';
-import { EskizService } from './eskiz.service';
+import { EskizService } from './eskiz/eskiz.service';
 import { PHONE_OTP_SERVICE } from './phone-otp.constants';
-import { EskizAuthService } from './eskiz-auth.service';
+import { EskizAuthService } from './eskiz/eskiz-auth.service';
 import { HttpModule } from '@nestjs/axios';
-import { ESKIZ_CREDENTIALS } from './eskiz.constants';
+import { ESKIZ_CREDENTIALS } from './eskiz/eskiz.constants';
 
 @Module({
   providers: [

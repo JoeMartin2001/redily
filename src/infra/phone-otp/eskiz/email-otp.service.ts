@@ -14,7 +14,7 @@ import {
   PhoneOTPResponse,
 } from 'src/infra/phone-otp/interfaces/PhoneOTPInterface';
 import { I18nService } from 'nestjs-i18n';
-import { EmailClientService } from '../email-client/email-client.service';
+import { EmailClientService } from '../../email-client/email-client.service';
 import { v4 as uuidv4 } from 'uuid';
 
 const temporaryEmail = 'sardorbekaminjonov2001@gmail.com';

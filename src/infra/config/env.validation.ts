@@ -139,7 +139,7 @@ class EnvironmentVariables {
 
   // ───── OTP Provider ─────
   @IsEnum(OtpProviderEnum, {
-    message: 'OTP_PROVIDER must be either eskiz or email',
+    message: 'OTP_PROVIDER must be a valid OTP provider',
   })
   OTP_PROVIDER!: OtpProviderEnum;
 }
