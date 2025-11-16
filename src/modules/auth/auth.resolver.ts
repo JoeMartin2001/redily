@@ -3,13 +3,21 @@ import { AuthService } from './auth.service';
 import { Auth } from './entities/auth.entity';
 import { OTPCodeService } from '../otp/otp-code.service';
 import { VerifyPhoneInput } from './dto/verify-phone.input';
+import { TelegramAuthInput } from './dto/telegram-auth.input';
+import { ConfigService } from '@nestjs/config';
 
 @Resolver(() => Auth)
 export class AuthResolver {
+  private readonly telegramBotToken!: string;
+
   constructor(
     private readonly authService: AuthService,
     private readonly otpCodeService: OTPCodeService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.telegramBotToken =
+      this.configService.get<string>('app.telegramBotToken') ?? '';
+  }
 
   // --- External Login (Google/Social) ---
   // This is kept, but the service must now use Supabase's social sign-in methods
@@ -43,5 +51,10 @@ export class AuthResolver {
 
     // Return the JWT (accessToken) to the client
     return tokens;
+  }
+
+  @Mutation(() => Auth)
+  async telegramAuth(@Args('input') input: TelegramAuthInput): Promise<Auth> {
+    return await this.authService.finalizeTelegramAuth(input);
   }
 }

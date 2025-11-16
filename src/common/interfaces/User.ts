@@ -21,6 +21,8 @@ export interface IUser {
   emailVerifiedAt: Date | null;
   type: IUserType;
 
+  telegramId?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +41,7 @@ export enum IUserAuthProvider {
   LOCAL = 'local',
   GOOGLE = 'google',
   PHONE = 'phone',
+  TELEGRAM = 'telegram',
 }
 
 registerEnumType(IUserAuthProvider, {

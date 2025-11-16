@@ -20,6 +20,8 @@
     "compose-up:staging": "docker compose --env-file .env.staging up --build -d",
     "compose-up:prod": "docker compose --env-file .env up --build -d",
     "compose-down": "docker compose down -v --remove-orphans",
+    "minikube-start": "minikube start --driver=docker",
+    "minikube-stop": "minikube stop",
     "kube-apply": "kubectl apply -f k8s/",
     "kube-logs": "kubectl logs -f deployment/ridely-api",
     "kube-rollout-restart": "kubectl rollout restart deployment ridely-api",

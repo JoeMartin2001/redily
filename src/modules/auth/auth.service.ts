@@ -16,6 +16,8 @@ import { I18nService } from 'nestjs-i18n';
 import { RegisterInput } from './dto/register.input';
 import { StorageService } from 'src/infra/storage/storage.service';
 import { SupabaseService } from 'src/infra/supabase/supabase.service';
+import { TelegramAuthInput } from './dto/telegram-auth.input';
+import { Auth } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {
@@ -257,5 +259,152 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  verifyTelegram(input: TelegramAuthInput, botToken: string): boolean {
+    const { hash, ...data } = input;
+
+    const secretKey = crypto.createHash('sha256').update(botToken).digest();
+
+    const checkString = Object.keys(data)
+      .sort()
+      .map((key) => `${key}=${data[key]}`)
+      .join('\n');
+
+    const computedHash = crypto
+      .createHmac('sha256', secretKey)
+      .update(checkString)
+      .digest('hex');
+
+    return computedHash === hash;
+  }
+
+  async finalizeTelegramAuth(input: TelegramAuthInput): Promise<Auth> {
+    this.logger.log(`Attempting Telegram auth for user: ${input.id}`);
+
+    const supabaseAdmin = this.supabaseService.getAdminClient();
+
+    // 1. Verify Telegram signature
+    const isValid = this.verifyTelegram(
+      input,
+      this.configService.get<string>('app.telegramBotToken') ?? '',
+    );
+    if (!isValid) {
+      this.logger.warn(`Telegram hash verification failed for: ${input.id}`);
+      throw new UnauthorizedException(
+        'Invalid Telegram authentication payload',
+      );
+    }
+
+    // 2. Create placeholder email + deterministic internal password
+    const placeholderEmail = `telegram_${input.id}@ridely.uz`;
+
+    const tempPassword = crypto
+      .createHash('sha256')
+      .update(
+        `${input.id}:${this.configService.get<string>('app.supabaseTelegramSecret') ?? ''}`,
+      )
+      .digest('hex');
+
+    let accessToken: string | undefined;
+    let refreshToken: string | undefined;
+
+    // --- 1. Try to sign in existing user ---
+    try {
+      const { data, error } = await supabaseAdmin.auth.signInWithPassword({
+        email: placeholderEmail,
+        password: tempPassword,
+      });
+
+      if (data?.session?.access_token) {
+        this.logger.log(`Telegram sign-in successful for: ${input.username}`);
+        accessToken = data.session.access_token;
+        refreshToken = data.session.refresh_token;
+      } else if (error?.message.includes('Invalid login credentials')) {
+        this.logger.log(
+          `Telegram user not found, proceeding with sign-up: ${input.username}`,
+        );
+      } else if (error) {
+        this.logger.error(`Telegram sign-in error: ${error.message}`);
+        throw new InternalServerErrorException(
+          this.i18n.t('auth.authentication_error', {
+            args: { message: error.message },
+          }),
+        );
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Unknown error';
+      this.logger.error(
+        `Unexpected Telegram login exception (sign-in): ${msg}`,
+      );
+    }
+
+    // --- 2. If sign in failed -> sign up new user ---
+    if (!accessToken) {
+      try {
+        const { data, error } = await supabaseAdmin.auth.admin.createUser({
+          email: placeholderEmail,
+          password: tempPassword,
+          email_confirm: true,
+          user_metadata: {
+            telegram_id: input.id,
+            username: input.username,
+            first_name: input.first_name,
+            last_name: input.last_name,
+            photo_url: input.photo_url,
+            provider: 'telegram',
+          },
+        });
+
+        if (error) {
+          this.logger.error(`Telegram sign-up error: ${error.message}`);
+          throw new InternalServerErrorException(
+            this.i18n.t('auth.registration_error', {
+              args: { message: error.message },
+            }),
+          );
+        }
+
+        // Sign-in newly created user
+        if (data?.user) {
+          const { data: signInData, error: signInErr } =
+            await supabaseAdmin.auth.signInWithPassword({
+              email: placeholderEmail,
+              password: tempPassword,
+            });
+
+          if (signInData?.session?.access_token) {
+            this.logger.log(
+              `Telegram sign-up successful for: ${input.username}`,
+            );
+            accessToken = signInData.session.access_token;
+            refreshToken = signInData.session.refresh_token;
+          } else if (signInErr) {
+            this.logger.error(
+              `Telegram post sign-up sign-in error: ${signInErr.message}`,
+            );
+            throw new InternalServerErrorException(
+              this.i18n.t('auth.authentication_error', {
+                args: { message: signInErr.message },
+              }),
+            );
+          }
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Unknown error';
+        this.logger.error(`Unexpected Telegram sign-up exception: ${msg}`);
+
+        throw new InternalServerErrorException(
+          this.i18n.t('auth.unexpected_registration_error'),
+        );
+      }
+    }
+
+    // --- 3. Return session to client ---
+    return {
+      accessToken: accessToken ?? '',
+      refreshToken: refreshToken ?? '',
+      user: undefined,
+    };
   }
 }

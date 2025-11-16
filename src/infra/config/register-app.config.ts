@@ -51,6 +51,8 @@ export default registerAs('app', () => ({
 
   supabasePhoneSecret:
     process.env.SUPABASE_PHONE_SECRET || 'ridely-default-phone-secret',
+  supabaseTelegramSecret: process.env.SUPABASE_TELEGRAM_SECRET,
+  telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
   supabaseDatabaseUrl: process.env.SUPABASE_DATABASE_URL,
 
   // Eskiz

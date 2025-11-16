@@ -93,6 +93,7 @@ enum IUserAuthProvider {
   GOOGLE
   LOCAL
   PHONE
+  TELEGRAM
 }
 
 """User types"""
@@ -120,6 +121,7 @@ type Mutation {
   """Get presigned PUT URL for avatar"""
   requestAvatarUploadUrl(filename: String!, mime: String!): PresignedUrl!
   sendPhoneOtp(phoneNumber: String!): Boolean!
+  telegramAuth(input: TelegramAuthInput!): Auth!
   updateBooking(updateBookingInput: UpdateBookingInput!): Booking!
   updateChat(updateChatInput: UpdateChatInput!): Chat!
   updateNotification(updateNotificationInput: UpdateNotificationInput!): Notification!
@@ -172,6 +174,16 @@ type Ride {
 type RideRequest {
   """Example field (placeholder)"""
   exampleField: Int!
+}
+
+input TelegramAuthInput {
+  auth_date: String!
+  first_name: String!
+  hash: String!
+  id: String!
+  last_name: String
+  photo_url: String
+  username: String
 }
 
 input UpdateBookingInput {
@@ -250,6 +262,7 @@ type User {
   lastName: String!
   phoneNumber: String!
   rides: [Ride!]!
+  telegramId: String!
   type: String!
   updatedAt: DateTime!
   username: String!
