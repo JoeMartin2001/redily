@@ -2,6 +2,7 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { join } from 'path';
 
 import { User } from 'src/modules/user/entities/user.entity';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
@@ -44,22 +45,21 @@ export const supabaseDbConfig = (
       DistrictEntity,
     ],
 
-    // Synchronize should be false in production
-    synchronize: [Environment.Development, Environment.Local].includes(
-      configService.get<Environment>('app.nodeEnv')!,
-    ),
+    // Synchronize should be false when using migrations
+    // Disabled to prevent conflicts with migrations
+    synchronize: false,
 
     // Drop schema in local development only (dangerous - use with caution)
-    // dropSchema:
-    //   configService.get<Environment>('app.nodeEnv') === Environment.Local,
+    dropSchema:
+      configService.get<Environment>('app.nodeEnv') === Environment.Local,
 
     // Logging
     logging: [Environment.Development, Environment.Local].includes(
       configService.get<Environment>('app.nodeEnv')!,
     ),
 
-    // Migrations
-    migrations: [__dirname + '/../migrations/*.ts'],
+    // Migrations - use .js for compiled migrations (works in both dev and prod)
+    migrations: [join(__dirname, '../migrations/*.js')],
     migrationsRun: true,
 
     // Other options
