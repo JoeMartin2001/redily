@@ -1,4 +1,6 @@
 export const TableName = {
+  CHAT_MESSAGES: 'chat_messages',
+  CHAT_ROOMS: 'chat_rooms',
   DISTRICTS: 'districts',
   REGIONS: 'regions',
   USERS: 'users',
@@ -6,7 +8,6 @@ export const TableName = {
   EMAIL_VERIFICATION_TOKENS: 'email_verification_tokens',
   RIDES: 'rides',
   BOOKINGS: 'bookings',
-  CHATS: 'chats',
   NOTIFICATIONS: 'notifications',
   VEHICLES: 'vehicles',
   PAYMENTS: 'payments',

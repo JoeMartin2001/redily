@@ -12,3 +12,5 @@ export * from './OTPCode';
 export * from './Region';
 export * from './District';
 export * from './Booking';
+export * from './ChatRoom';
+export * from './ChatMessage';

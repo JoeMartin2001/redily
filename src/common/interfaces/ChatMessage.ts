@@ -7,8 +7,12 @@ export interface IChatMessage {
   senderId: string;
   receiverId: string;
   message: string;
-  timestamp: Date;
+  createdAt: Date;
+  updatedAt: Date;
   isRead: boolean;
+  type: ChatMessageType;
+  status: ChatMessageStatus;
+  chatRoomId: string;
 }
 
 export enum ChatMessageType {
@@ -17,7 +21,15 @@ export enum ChatMessageType {
   IMAGE = 'image',
 }
 
-registerEnumType(ChatMessageType, {
-  name: 'ChatMessageType',
-  description: 'Chat message type',
+export enum ChatMessageStatus {
+  PENDING = 'pending',
+  SENT = 'sent',
+  DELIVERED = 'delivered',
+  READ = 'read',
+  FAILED = 'failed',
+}
+
+registerEnumType(ChatMessageStatus, {
+  name: 'ChatMessageStatus',
+  description: 'Chat message status',
 });

@@ -14,9 +14,10 @@ import { RidesModule } from '../rides/rides.module';
 import { RideRequestsModule } from '../ride-requests/ride-requests.module';
 import { BookingsModule } from '../bookings/bookings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { ChatModule } from '../chat/chat.module';
 import { RegionsModule } from '../regions/regions.module';
 import { DistrictsModule } from '../districts/districts.module';
+import { ChatRoomModule } from '../chat-room/chat-room.module';
+import { ChatMessageModule } from '../chat-message/chat-message.module';
 
 @Module({
   controllers: [AppController],
@@ -39,7 +40,8 @@ import { DistrictsModule } from '../districts/districts.module';
     RideRequestsModule,
     BookingsModule,
     NotificationsModule,
-    ChatModule,
+    ChatRoomModule,
+    ChatMessageModule,
     RegionsModule,
     DistrictsModule,
   ],
