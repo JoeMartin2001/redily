@@ -234,8 +234,19 @@ type Ride {
 }
 
 type RideRequest {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  createdAt: DateTime!
+  id: ID!
+  rideId: String!
+  status: RideRequestStatus!
+  updatedAt: DateTime!
+  userId: String!
+}
+
+"""Ride request status"""
+enum RideRequestStatus {
+  APPROVED
+  PENDING
+  REJECTED
 }
 
 input TelegramAuthInput {

@@ -5,7 +5,7 @@ import { TableName } from 'src/common/constants/TableName';
 
 @ObjectType()
 @Entity(TableName.RIDE_REQUESTS)
-export class RideRequest implements IRideRequest {
+export class RideRequest implements Partial<IRideRequest> {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')
   id!: string;

@@ -1,3 +1,5 @@
+import { registerEnumType } from '@nestjs/graphql';
+
 export interface IRideRequest {
   id: string;
   rideId: string;
@@ -14,3 +16,8 @@ export enum RideRequestStatus {
   APPROVED = 'approved',
   REJECTED = 'rejected',
 }
+
+registerEnumType(RideRequestStatus, {
+  name: 'RideRequestStatus',
+  description: 'Ride request status',
+});
