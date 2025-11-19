@@ -15,9 +15,10 @@ import {
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
 import { Coordinate } from './coordinate.entity';
+import { TableName } from 'src/common/constants/TableName';
 
 @ObjectType()
-@Entity()
+@Entity(TableName.RIDES)
 export class Ride {
   @Field(() => ID)
   @PrimaryGeneratedColumn('uuid')

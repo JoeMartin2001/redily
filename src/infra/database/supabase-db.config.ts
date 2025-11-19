@@ -58,9 +58,9 @@ export const supabaseDbConfig = (
     ],
     // Drop schema in local/development to fix existing NULL values issue
     // This will drop and recreate tables, allowing synchronize to work properly
-    // dropSchema: [Environment.Development, Environment.Local].includes(
-    //   configService.get<Environment>('app.nodeEnv')!,
-    // ),
+    dropSchema: [Environment.Development, Environment.Local].includes(
+      configService.get<Environment>('app.nodeEnv')!,
+    ),
 
     // Logging
     logging: [Environment.Development, Environment.Local].includes(
@@ -74,9 +74,9 @@ export const supabaseDbConfig = (
 
     // Synchronize enabled for all tables - migrations handle regions/districts separately
     // Migration runs after synchronize and will drop/recreate regions/districts with seed data
-    // synchronize: [Environment.Development, Environment.Local].includes(
-    //   configService.get<Environment>('app.nodeEnv')!,
-    // ),
+    synchronize: [Environment.Development, Environment.Local].includes(
+      configService.get<Environment>('app.nodeEnv')!,
+    ),
 
     // Other options
     connectTimeoutMS: 10000, // 10 seconds

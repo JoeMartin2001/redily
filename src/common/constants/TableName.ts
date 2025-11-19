@@ -1,4 +1,5 @@
 export const TableName = {
+  COORDINATES: 'coordinates',
   CHAT_MESSAGES: 'chat_messages',
   CHAT_ROOMS: 'chat_rooms',
   DISTRICTS: 'districts',
