@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
@@ -8,7 +9,13 @@ import { Environment } from '../config/env.validation';
 import { EmailVerificationToken } from 'src/modules/auth/entities/email-verification-token.entity';
 import { OTPCodeEntity } from 'src/modules/otp/entities/otpcode.entity';
 import { Ride } from 'src/modules/rides/entities/ride.entity';
-import { join } from 'path';
+import { ChatRoom } from 'src/modules/chat-room/entities/chat-room.entity';
+import { ChatMessage } from 'src/modules/chat-message/entities/chat-message.entity';
+import { RideRule } from 'src/modules/ride-rules/entities/ride-rule.entity';
+import { RideRequest } from 'src/modules/ride-requests/entities/ride-request.entity';
+import { Vehicle } from 'src/modules/vehicles/entities/vehicle.entity';
+import { Review } from 'src/modules/reviews/entities/review.entity';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
   type: 'postgres' as const,
@@ -36,6 +43,13 @@ export const typeOrmConfig = (config: ConfigService): TypeOrmModuleOptions => ({
     EmailVerificationToken,
     OTPCodeEntity,
     Ride,
+    ChatRoom,
+    ChatMessage,
+    RideRule,
+    RideRequest,
+    Vehicle,
+    Review,
+    Notification,
   ],
   dropSchema: true,
 

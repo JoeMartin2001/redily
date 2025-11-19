@@ -13,6 +13,11 @@ import { EmailVerificationToken } from 'src/modules/auth/entities/email-verifica
 import { Environment } from '../config/env.validation';
 import { ChatRoom } from 'src/modules/chat-room/entities/chat-room.entity';
 import { ChatMessage } from 'src/modules/chat-message/entities/chat-message.entity';
+import { RideRule } from 'src/modules/ride-rules/entities/ride-rule.entity';
+import { RideRequest } from 'src/modules/ride-requests/entities/ride-request.entity';
+import { Vehicle } from 'src/modules/vehicles/entities/vehicle.entity';
+import { Review } from 'src/modules/reviews/entities/review.entity';
+import { Notification } from 'src/modules/notifications/entities/notification.entity';
 
 export const supabaseDbConfig = (
   configService: ConfigService,
@@ -44,6 +49,11 @@ export const supabaseDbConfig = (
       EmailVerificationToken,
       ChatRoom,
       ChatMessage,
+      RideRule,
+      RideRequest,
+      Vehicle,
+      Review,
+      Notification,
       // RegionEntity and DistrictEntity excluded - handled by migrations
     ],
     // Drop schema in local/development to fix existing NULL values issue
