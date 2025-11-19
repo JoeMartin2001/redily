@@ -8,6 +8,7 @@ import { Environment } from './infra/config/env.validation';
 import { I18nMiddleware } from 'nestjs-i18n';
 import { I18nGqlExceptionFilter } from './common/filters/i18n-exception.filter';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.mjs';
+import { AppLogger } from './infra/logger/app-logger.service';
 
 const bootstrap = async () => {
   try {
@@ -33,6 +34,9 @@ const bootstrap = async () => {
         },
       }),
     );
+
+    const appLogger = app.get(AppLogger);
+    app.useLogger(appLogger);
 
     app.use(compression());
     app.use(graphqlUploadExpress({ maxFileSize: 10_000_000, maxFiles: 1 })); // 10MB

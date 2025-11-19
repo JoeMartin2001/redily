@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from 'src/infra/config/config.module';
 import { DatabaseModule } from 'src/infra/database/database.module';
 import { GqlModule } from 'src/infra/graphql/graphql.module';
@@ -19,6 +19,8 @@ import { DistrictsModule } from '../districts/districts.module';
 import { ChatRoomModule } from '../chat-room/chat-room.module';
 import { ChatMessageModule } from '../chat-message/chat-message.module';
 import { CacheModule } from 'src/infra/cache/cache.module';
+import { RequestIdMiddleware } from 'src/infra/logger/middlewares/request-id.middleware';
+import { LoggerModule } from 'src/infra/logger/logger.module';
 
 @Module({
   controllers: [AppController],
@@ -33,6 +35,7 @@ import { CacheModule } from 'src/infra/cache/cache.module';
     MetricsModule,
     StorageModule.forRoot(),
     CacheModule,
+    LoggerModule,
 
     UserModule,
     AuthModule,
@@ -48,4 +51,8 @@ import { CacheModule } from 'src/infra/cache/cache.module';
     DistrictsModule,
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestIdMiddleware).forRoutes('*');
+  }
+}
