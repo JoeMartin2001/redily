@@ -5,6 +5,6 @@ export default registerAs('database', () => ({
   port: parseInt(process.env.DB_PORT ?? '5432', 10),
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'postgres',
-  name: process.env.DB_NAME || 'monolingo',
+  name: process.env.DB_NAME || 'ridely',
   ssl: process.env.DB_SSL === 'true',
 }));

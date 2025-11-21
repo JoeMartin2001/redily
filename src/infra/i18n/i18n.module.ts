@@ -12,7 +12,7 @@ import { Environment } from '../config/env.validation';
 
 const i18nPath =
   process.env.NODE_ENV === Environment.Production
-    ? join(process.cwd(), 'dist/infra/i18n/locales/')
+    ? join(__dirname, 'locales') // dist/infra/i18n/locales
     : join(process.cwd(), 'src/infra/i18n/locales/');
 
 @Module({

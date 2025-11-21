@@ -28,24 +28,7 @@ export class HealthController {
       // Check API health
       () => {
         const port = this.configService.get<number>('app.port') ?? 4000;
-        const nodeEnv =
-          this.configService.get<Environment>('app.nodeEnv') ??
-          Environment.Development;
-
-        if ([Environment.Development, Environment.Local].includes(nodeEnv)) {
-          return this.http.pingCheck(
-            'monolingo-api',
-            `http://localhost:${port}`,
-          );
-        }
-
-        const apiUrl = this.configService.get<string>('app.frontendUrl');
-
-        if (!apiUrl) {
-          throw new Error('API URL is not set');
-        }
-
-        return this.http.pingCheck('monolingo-api', apiUrl);
+        return this.http.pingCheck('ridely-api', `http://localhost:${port}`);
       },
 
       // Check database health

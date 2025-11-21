@@ -10,10 +10,8 @@ RUN yarn install --frozen-lockfile
 # Copy source and build the app
 COPY . .
 
-# ✅ copy translations into dist
-COPY src/infra/i18n/locales ./dist/infra/i18n/locales 
-
-RUN npm run build
+# Build TS -> dist
+RUN yarn build
 
 # ─── Stage 2: Runtime ──────────────────────────────────────────────
 FROM node:20-alpine AS runner
@@ -26,7 +24,7 @@ COPY --from=builder /usr/src/app/dist ./dist
 COPY package*.json ./
 
 # Expose the app port (use env later for flexibility)
-EXPOSE 3000
+EXPOSE 4000
 
 # Default command
 CMD ["node", "dist/main.js"]

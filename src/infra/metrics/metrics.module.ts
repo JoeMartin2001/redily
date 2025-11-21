@@ -20,7 +20,7 @@ import { MetricsMiddleware } from './middlewares/metrics.middleware';
       transports: [
         new LokiTransport({
           host: 'http://loki:3100',
-          labels: { app: 'monolingo-api' },
+          labels: { app: 'ridely-api' },
         }),
       ],
     }),

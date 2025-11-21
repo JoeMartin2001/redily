@@ -14,7 +14,7 @@ export class EmailService {
       expiresInMinutes: number;
     },
   ) {
-    const subject = 'Reset your Monolingo password';
+    const subject = 'Reset your Ridely password';
 
     const html = `
           <p>Hi ${params.username},</p>
@@ -39,7 +39,7 @@ export class EmailService {
       expiresInMinutes: number;
     },
   ) {
-    const subject = 'Verify your Monolingo email';
+    const subject = 'Verify your Ridely email';
 
     const html = `
           <p>Hi ${params.username},</p>
@@ -61,11 +61,11 @@ export class EmailService {
       username: string;
     },
   ) {
-    const subject = 'Welcome to Monolingo';
+    const subject = 'Welcome to Ridely';
 
     const html = `
           <p>Hi ${params.username},</p>
-          <p>Welcome to Monolingo!</p>
+          <p>Welcome to Ridely!</p>
           <p>Thank you for signing up.</p>
         `;
 

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: postgres
+  namespace: ridely
 spec:
   replicas: 1
   selector:
@@ -15,36 +16,50 @@ spec:
       containers:
         - name: postgres
           image: postgres:15
-          envFrom:
-            - secretRef:
-                name: ridely-secrets
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: DB_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: DB_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: DB_NAME
           ports:
             - containerPort: 5432
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: postgres-data
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
+            periodSeconds: 20
       volumes:
-        - name: postgres-data
+        - name: data
           persistentVolumeClaim:
-            claimName: postgres-pvc
+            claimName: postgres-data
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: ridely
 spec:
-  type: ClusterIP
-  ports:
-    - port: 5432
   selector:
     app: postgres
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-pvc
-spec:
-  accessModes: ['ReadWriteOnce']
-  resources:
-    requests:
-      storage: 1Gi
+  ports:
+    - port: 5432
+      targetPort: 5432

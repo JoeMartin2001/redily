@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-cors
+  namespace: ridely
+data:
+  cors.json: |
+    [
+      {
+        "AllowedOrigins": ["http://localhost:3000", "https://ridely.uz"],
+        "AllowedMethods": ["GET", "PUT", "POST", "DELETE"],
+        "AllowedHeaders": ["*"],
+        "ExposeHeaders": ["ETag", "x-amz-request-id", "x-amz-version-id"],
+        "MaxAgeSeconds": 3000
+      }
+    ]

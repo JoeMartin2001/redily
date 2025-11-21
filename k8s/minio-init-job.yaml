@@ -1,0 +1,72 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init
+  namespace: ridely
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: minio-init
+          image: minio/mc:latest
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: MINIO_ROOT_PASSWORD
+            - name: S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: ridely-app-config
+                  key: S3_BUCKET
+            - name: S3_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: S3_KEY
+            - name: S3_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: S3_SECRET
+          volumeMounts:
+            - name: cors
+              mountPath: /cors
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              echo "Waiting for MinIO..."
+              until (/usr/bin/mc alias set local http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"); do
+                echo "waiting for minio..."; sleep 2;
+              done;
+
+              echo "Creating bucket..."
+              /usr/bin/mc mb -p local/$S3_BUCKET || true
+
+              echo "Make bucket public..."
+              /usr/bin/mc anonymous set download local/$S3_BUCKET || true
+
+              echo "Apply CORS..."
+              /usr/bin/mc anonymous set cors local/$S3_BUCKET /cors/cors.json || true
+
+              echo "Create service account..."
+              /usr/bin/mc admin user svcacct add local "$MINIO_ROOT_USER" --access-key "$S3_KEY" --secret-key "$S3_SECRET" || true
+
+              echo "MinIO ready."
+      volumes:
+        - name: cors
+          configMap:
+            name: minio-cors
+            items:
+              - key: cors.json
+                path: cors.json

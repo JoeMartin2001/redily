@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: minio
+  namespace: ridely
 spec:
   replicas: 1
   selector:
@@ -18,40 +19,43 @@ spec:
           args:
             - server
             - /data
-            - --console-address=:9001
-          envFrom:
-            - secretRef:
-                name: ridely-secrets
+            - --console-address
+            - ':9001'
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ridely-secrets
+                  key: MINIO_ROOT_PASSWORD
           ports:
-            - containerPort: 9000
-            - containerPort: 9001
+            - containerPort: 9000 # S3
+            - containerPort: 9001 # Console
           volumeMounts:
-            - mountPath: /data
-              name: minio-data
+            - name: data
+              mountPath: /data
       volumes:
-        - name: minio-data
+        - name: data
           persistentVolumeClaim:
-            claimName: minio-pvc
+            claimName: minio-data
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: minio
+  namespace: ridely
 spec:
-  ports:
-    - name: api
-      port: 9000
-    - name: console
-      port: 9001
   selector:
     app: minio
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: minio-pvc
-spec:
-  accessModes: ['ReadWriteOnce']
-  resources:
-    requests:
-      storage: 2Gi
+  ports:
+    - name: s3
+      port: 9000
+      targetPort: 9000
+    - name: console
+      port: 9001
+      targetPort: 9001
+  type: NodePort # For local access; in cloud you might use LoadBalancer
