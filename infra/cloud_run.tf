@@ -65,6 +65,16 @@ resource "google_cloud_run_v2_service" "api" {
 
       # Google OAuth
       env {
+        name = "GOOGLE_CLIENT_ID"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secrets["google-client-id"].secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
         name = "GOOGLE_CLIENT_SECRET"
         value_source {
           secret_key_ref {
@@ -110,6 +120,16 @@ resource "google_cloud_run_v2_service" "api" {
         value_source {
           secret_key_ref {
             secret  = google_secret_manager_secret.secrets["supabase-database-password"].secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "SUPABASE_DATABASE_URL"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secrets["supabase-database-url"].secret_id
             version = "latest"
           }
         }
@@ -168,7 +188,47 @@ resource "google_cloud_run_v2_service" "api" {
         }
       }
 
+      env {
+        name = "DB_HOST"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secrets["db-host"].secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DB_PORT"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secrets["db-port"].secret_id
+            version = "latest"
+          }
+        }
+      }
+
       # S3/MinIO
+      env {
+        name = "MINIO_ROOT_USER"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secrets["minio-root-user"].secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "MINIO_ROOT_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.secrets["minio-root-password"].secret_id
+            version = "latest"
+          }
+        }
+      }
+
       env {
         name = "S3_SECRET"
         value_source {

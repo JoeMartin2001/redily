@@ -356,7 +356,7 @@ dynamic "env" {
 ```hcl
 # secrets.auto.tfvars
 secrets = {
-  "db-password" = "ridely@00!"
+  "db-password" = "test-password"
 }
 
 # secrets.tf
@@ -387,7 +387,7 @@ env {
 
 ```bash
 NODE_ENV=production
-DB_PASSWORD=ridely@00!
+DB_PASSWORD=test-password
 JWT_SECRET=9fab5279-b888-4c8c-8fc6-ce5523a02cf3
 ...
 ```
