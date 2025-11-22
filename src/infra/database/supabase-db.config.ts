@@ -70,7 +70,7 @@ export const supabaseDbConfig = (
     // Migrations - use .js for compiled migrations (works in both dev and prod)
     migrations: [join(__dirname, './migrations/*.js')],
     // Run migrations automatically to seed regions and districts data
-    migrationsRun: true,
+    migrationsRun: configService.get<boolean>('app.runMigrations'),
 
     // Synchronize enabled for all tables - migrations handle regions/districts separately
     // Migration runs after synchronize and will drop/recreate regions/districts with seed data
@@ -79,7 +79,7 @@ export const supabaseDbConfig = (
     // ),
 
     // Other options
-    connectTimeoutMS: 10000, // 10 seconds
+    connectTimeoutMS: 30000, // 30 seconds (Supabase pooler can be slow)
     maxQueryExecutionTime: 5000, // 5 seconds
 
     namingStrategy: new SnakeNamingStrategy(),

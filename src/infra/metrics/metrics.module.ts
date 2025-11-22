@@ -16,13 +16,21 @@ import { MetricsMiddleware } from './middlewares/metrics.middleware';
         enabled: true,
       },
     }),
-    WinstonModule.forRoot({
-      transports: [
-        new LokiTransport({
-          host: 'http://loki:3100',
-          labels: { app: 'ridely-api' },
-        }),
-      ],
+    WinstonModule.forRootAsync({
+      useFactory: () => {
+        const transports: any[] = [];
+
+        if (process.env.LOKI_HOST) {
+          transports.push(
+            new LokiTransport({
+              host: process.env.LOKI_HOST,
+              labels: { app: 'ridely-api' },
+            }),
+          );
+        }
+
+        return { transports };
+      },
     }),
   ],
   providers: [

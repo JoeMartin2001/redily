@@ -56,7 +56,12 @@ const bootstrap = async () => {
 
     // Config service
     const configService = app.get(ConfigService);
-    const port = configService.get<number>('app.port') ?? 3000;
+
+    const port =
+      Number(process.env.PORT) || // Cloud Run / generic platform
+      Number(configService.get('app.port')) || // your own config key
+      4000;
+
     const nodeEnv =
       configService.get<Environment>('app.nodeEnv') ?? Environment.Development;
     const frontendUrl = configService.get<string>('app.frontendUrl') ?? '*';
@@ -73,7 +78,7 @@ const bootstrap = async () => {
       credentials: true,
     });
 
-    await app.listen(port);
+    await app.listen(port, '0.0.0.0');
 
     if ([Environment.Development, Environment.Local].includes(nodeEnv)) {
       console.log(`🚀 Application is running on: http://localhost:${port}`);

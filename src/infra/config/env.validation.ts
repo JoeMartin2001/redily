@@ -28,6 +28,10 @@ class EnvironmentVariables {
   @IsEnum(Environment)
   NODE_ENV!: Environment;
 
+  @IsOptional()
+  @IsBooleanString()
+  RUN_MIGRATIONS!: string;
+
   @IsNumber()
   @Min(0)
   @Max(65535)

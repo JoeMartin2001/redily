@@ -3,6 +3,7 @@ import { Environment } from './env.validation';
 
 export default registerAs('app', () => ({
   nodeEnv: process.env.NODE_ENV || Environment.Development,
+  runMigrations: process.env.RUN_MIGRATIONS === 'true',
   port: parseInt(process.env.PORT ?? '3000', 10),
 
   // Security

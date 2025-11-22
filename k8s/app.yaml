@@ -42,30 +42,15 @@ kind: Service
 metadata:
   name: ridely-api
   namespace: ridely
+  labels:
+    app: ridely-api
 spec:
   selector:
     app: ridely-api
   ports:
-    - port: 4000
+    - name: http
+      port: 4000
       targetPort: 4000
       nodePort: 30080
   type: NodePort # For local dev; use LoadBalancer/Ingress in cloud
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: ridely-api-monitor
-  namespace: ridely
-  labels:
-    release: monitoring
-spec:
-  selector:
-    matchLabels:
-      app: ridely-api
-  namespaceSelector:
-    matchNames:
-      - ridely
-  endpoints:
-    - port: http # name of port in Service
-      path: /metrics
-      interval: 15s
+
